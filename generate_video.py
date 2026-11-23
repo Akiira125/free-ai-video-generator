@@ -96,28 +96,52 @@ def synthesize_narration(text: str, voice: str, out_mp3: Path):
     asyncio.run(_synthesize(text, voice, out_mp3))
 
 
+
 def fetch_image(prompt: str, out_path: Path, width=CANVAS_W, height=CANVAS_H, retries=4):
-    seed = random.randint(1, 999_999)
-    styled_prompt = f"{prompt}{ANIME_STYLE_SUFFIX}"
-    url = (f"{POLLINATIONS_BASE}/{quote(styled_prompt)}?width={width}&height={height}"
-           f"&seed={seed}&nologo=true&model=flux-anime")
-    fallback_url = (f"{POLLINATIONS_BASE}/{quote(styled_prompt)}?width={width}&height={height}"
-                     f"&seed={seed}&nologo=true")
-    last_err = None
-    for attempt in range(1, retries + 1):
-        try:
-            try_url = url if attempt <= retries - 1 else fallback_url
-            resp = requests.get(try_url, timeout=120)
-            resp.raise_for_status()
-            out_path.write_bytes(resp.content)
-            if out_path.stat().st_size > 5000:
-                return
-            last_err = "image response too small"
-        except Exception as e:  # noqa: BLE001
-            last_err = str(e)
-        print(f"  [image] attempt {attempt} failed ({last_err}), retrying...")
-        time.sleep(3 * attempt)
-    raise RuntimeError(f"Failed to fetch image for prompt {prompt!r}: {last_err}")
+    from PIL import ImageDraw
+    import hashlib
+
+    seed = int(hashlib.sha256(prompt.encode("utf-8")).hexdigest()[:8], 16)
+    rng = random.Random(seed)
+
+    img = Image.new("RGB", (width, height), (22, 30, 52))
+    draw = ImageDraw.Draw(img)
+
+    # Fantasy sky
+    for y in range(height):
+        color = (
+            int(20 + 35 * y / height),
+            int(30 + 25 * y / height),
+            int(60 + 25 * y / height)
+        )
+        draw.line((0, y, width, y), fill=color)
+
+    # Moon
+    draw.ellipse((1400, 100, 1580, 280), fill=(245, 230, 185))
+
+    # Mountains
+    for i in range(8):
+        x = i * 300 - 200
+        peak = rng.randint(350, 650)
+        draw.polygon(
+            [(x, height), (x + 220, peak), (x + 500, height)],
+            fill=(35, 48, 65)
+        )
+
+    # Foreground trees
+    for i in range(24):
+        x = rng.randint(0, width)
+        y = rng.randint(650, height)
+        h = rng.randint(130, 340)
+        draw.rectangle((x - 7, y - h, x + 7, y), fill=(25, 22, 30))
+        draw.polygon(
+            [(x - 65, y - 50), (x, y - h - 70), (x + 65, y - 50)],
+            fill=(18, 48, 43)
+        )
+
+    img.save(out_path, "JPEG", quality=90)
+    print("  [image] Local fantasy background generated")
+
 
 
 def run(cmd, **kwargs):
