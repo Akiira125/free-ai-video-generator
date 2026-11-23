@@ -337,7 +337,7 @@ def render_scene(background: Image.Image, rig: CharacterRig, mouth_cues, blink_s
     proc = subprocess.Popen(
     ffmpeg_cmd,
     stdin=subprocess.PIPE,
-    stderr=subprocess.PIPE
+    stderr=None
 )
 
     bg_rgba = background.convert("RGBA")
@@ -355,7 +355,7 @@ def render_scene(background: Image.Image, rig: CharacterRig, mouth_cues, blink_s
         try:
             proc.stdin.write(frame.convert("RGB").tobytes())
         except BrokenPipeError:
-            error = proc.stderr.read().decode("utf-8", errors="replace")
+            error ="FFmpeg stopped unexpectedly"
             raise RuntimeError(f"FFmpeg stopped: {error}")
 
     proc.stdin.close()
