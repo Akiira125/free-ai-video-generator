@@ -434,7 +434,11 @@ def main():
         gesture_schedule = make_gesture_schedule(duration)
 
         print(f"  -> generating background: {scene['image_prompt'][:70]}...")
-        fetch_image(scene["image_prompt"], image_path, CANVAS_W, CANVAS_H)
+        scene_images = sorted((Path(__file__).parent / "assets" / "scenes").glob("*.png"))
+        if i >= len(scene_images):
+            raise RuntimeError(f"Image manquante pour la scène {i + 1}")
+        shutil.copyfile(scene_images[i], image_path)
+
         background = prepare_background(image_path, CANVAS_W, CANVAS_H)
 
         print(f"  -> rendering animated scene ({duration:.1f}s, {int(duration*FPS)} frames)")
