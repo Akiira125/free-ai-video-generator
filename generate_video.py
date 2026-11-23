@@ -334,7 +334,11 @@ def render_scene(background: Image.Image, rig: CharacterRig, mouth_cues, blink_s
         "-c:a", "aac", "-shortest",
         str(out_path), "-loglevel", "error",
     ]
-    proc = subprocess.Popen(ffmpeg_cmd, stdin=subprocess.PIPE)
+    proc = subprocess.Popen(
+    ffmpeg_cmd,
+    stdin=subprocess.PIPE,
+    stderr=subprocess.PIPE
+)
 
     bg_rgba = background.convert("RGBA")
 
@@ -348,8 +352,11 @@ def render_scene(background: Image.Image, rig: CharacterRig, mouth_cues, blink_s
         bob = int(5 * math.sin(2 * math.pi * t / 2.6))
         frame = bg_rgba.copy()
         frame.alpha_composite(char_img, (anchor_x, anchor_y + bob))
-
-        proc.stdin.write(frame.convert("RGB").tobytes())
+        try:
+            proc.stdin.write(frame.convert("RGB").tobytes())
+        except BrokenPipeError:
+            error = proc.stderr.read().decode("utf-8", errors="replace")
+            raise RuntimeError(f"FFmpeg stopped: {error}")
 
     proc.stdin.close()
     proc.wait()
