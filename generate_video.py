@@ -28,7 +28,7 @@ import edge_tts
 from PIL import Image
 
 DEFAULT_VOICE = "en-US-AriaNeural"
-CANVAS_W, CANVAS_H = 854, 480
+CANVAS_W, CANVAS_H = 1920, 1080
 FPS = 12
 POLLINATIONS_BASE = "https://image.pollinations.ai/prompt"
 ANIME_STYLE_SUFFIX = (", anime background art, cel shaded, Studio Ghibli inspired, hand-painted anime "
