@@ -16,6 +16,10 @@ on:
         description: "Preview storyboard without API calls"
         type: boolean
         default: true
+      image_test:
+        description: "Scene numbers for image-only test (blank = full video)"
+        required: false
+        default: "5,6,7"
       media_mode:
         description: "Media source"
         type: choice
@@ -87,6 +91,7 @@ jobs:
         env:
           SCRIPT_PATH: ${{ steps.pick.outputs.path }}
           VOICE: ${{ github.event.inputs.voice }}
+          IMAGE_TEST: ${{ inputs.image_test }}
           MEDIA_MODE: ${{ github.event.inputs.media_mode }}
           POLLINATIONS_API_KEY: ${{ secrets.POLLINATIONS_API_KEY }}
           PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
@@ -98,17 +103,29 @@ jobs:
             python generate_video.py --script "$SCRIPT_PATH" --plan-only
             exit 0
           fi
+          if [ -n "$IMAGE_TEST" ]; then
+            EXTRA_ARGS+=(--image-test "$IMAGE_TEST")
+          fi
           if [ -n "$VOICE" ]; then
             EXTRA_ARGS+=(--voice "$VOICE")
           fi
           python generate_video.py --script "$SCRIPT_PATH" --out output/final_video.mp4 --media-mode "${MEDIA_MODE:-manual}" "${EXTRA_ARGS[@]}"
 
       - name: Upload video artifact
-        if: ${{ !inputs.plan_only }}
+        if: ${{ !inputs.plan_only && inputs.image_test == '' }}
         uses: actions/upload-artifact@v4
         with:
           name: final-video
           path: |
             output/final_video.mp4
             output/media_credits.json
+          retention-days: 14
+
+      - name: Upload selected images
+        if: ${{ !inputs.plan_only && inputs.image_test != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: selected-images
+          path: output/image_test/
+          if-no-files-found: error
           retention-days: 14
