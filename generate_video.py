@@ -400,7 +400,7 @@ def main():
     ap.add_argument("--character-scale", type=float, default=0.85)
     ap.add_argument("--rhubarb-bin", default="rhubarb")
     ap.add_argument("--keep-temp", action="store_true")
-    ap.add_argument("--media-mode", choices=["manual", "internet", "hybrid"], default="manual")
+    ap.add_argument("--media-mode", choices=["manual", "internet", "ai", "hybrid"], default="manual")
     args = ap.parse_args()
 
     settings, scenes = parse_script(args.script)
@@ -441,7 +441,7 @@ def main():
 
         print(f"  -> generating background: {scene['image_prompt'][:70]}...")
         credit = select_image(args.media_mode, i, scene["search_query"], image_path,
-                              Path(__file__).parent / "assets" / "scenes")
+                              Path(__file__).parent / "assets" / "scenes", prompt=scene["image_prompt"])
         media_credits.append({"scene": i + 1, **credit})
 
         background = prepare_background(image_path, CANVAS_W, CANVAS_H)
