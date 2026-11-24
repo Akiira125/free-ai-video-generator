@@ -1,0 +1,15 @@
+VOICE: en-US-AriaNeural
+MUSIC:
+
+---
+SEARCH: snowy forest
+IMAGE: cinematic snowy forest
+Winter transforms the forest into a silent landscape of snow and ice.
+---
+SEARCH: gray wolf
+IMAGE: gray wolf in nature
+The gray wolf is one of the most remarkable predators of the northern wilderness.
+---
+SEARCH: Neuschwanstein Castle
+IMAGE: fairy tale castle
+A magnificent castle rises above the landscape, like a scene from a fairy tale.
