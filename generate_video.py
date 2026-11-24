@@ -434,7 +434,7 @@ def main():
 
         if credit.get("kind") == "video":
             print("  -> rendering Pixabay video")
-            run(["ffmpeg", "-y", "-stream_loop", "-1", "-i", str(image_path.with_suffix(".mp4")),
+            run(["ffmpeg", "-y", "-stream_loop", "-1", "-i", str(image_path.with_name(image_path.stem + "_source.mp4")),
                  "-i", str(audio_mp3), "-map", "0:v:0", "-map", "1:a:0",
                  "-vf", f"scale={CANVAS_W}:{CANVAS_H}:force_original_aspect_ratio=increase,crop={CANVAS_W}:{CANVAS_H},setsar=1,fps={FPS}",
                  "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "-ar", "48000", "-ac", "2",
