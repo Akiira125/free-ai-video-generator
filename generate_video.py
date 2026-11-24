@@ -407,6 +407,7 @@ def main():
     ap.add_argument("--media-mode", choices=["manual", "internet", "ai", "hybrid", "pixabay", "pollinations-schnell", "pollinations-zimage", "pollinations-klein"], default="manual")
     ap.add_argument("--plan-only", action="store_true")
     ap.add_argument("--budget-milli-usd", type=int, default=40)
+    ap.add_argument("--image-test", default="")
     args = ap.parse_args()
 
     settings, scenes = parse_script(args.script)
@@ -417,6 +418,32 @@ def main():
     cache = Path(".image_cache")
     cache.mkdir(exist_ok=True)
     paid = args.media_mode.startswith("pollinations-")
+    if args.image_test:
+        indices = [int(x.strip()) for x in args.image_test.split(",")]
+        if len(indices) != len(set(indices)) or any(i < 1 or i > len(scenes) for i in indices):
+            raise ValueError("Invalid scene selection")
+        if not paid:
+            raise ValueError("Image test requires a Pollinations model")
+        selected = [(i, scenes[i-1]) for i in indices]
+        missing = sum(not (cache / (cache_key(args.media_mode, x["image_prompt"]) + ".jpg")).exists() for _, x in selected)
+        budget_check(args.media_mode, missing, min(args.budget_milli_usd, 15))
+        dest = Path("output/image_test")
+        dest.mkdir(parents=True, exist_ok=True)
+        report = []
+        for i, scene in selected:
+            path = dest / f"scene_{i:03}.jpg"
+            cached = cache / (cache_key(args.media_mode, scene["image_prompt"]) + ".jpg")
+            if cached.exists():
+                shutil.copy(cached, path)
+                credit = {"provider": "cache"}
+            else:
+                credit = select_image(args.media_mode, i-1, scene["search_query"], path, Path("assets/scenes"), prompt=scene["image_prompt"])
+            quality = check_image(path)
+            if not cached.exists():
+                shutil.copy(path, cached)
+            report.append({"scene": i, "prompt": scene["image_prompt"], "narration": scene["narration"], "quality": quality, **credit})
+        (dest / "report.json").write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+        return
     missing = sum(not (cache / (cache_key(args.media_mode, x["image_prompt"]) + ".jpg")).exists() for x in scenes)
     budget_check(args.media_mode, missing, args.budget_milli_usd)
     voice = args.voice or settings["voice"]
