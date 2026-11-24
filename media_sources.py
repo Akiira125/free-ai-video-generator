@@ -143,6 +143,34 @@ def pixabay_media(query, destination):
             print("  [media] Pixabay request failed")
     raise RuntimeError("No suitable Pixabay media found")
 
+
+POLLINATIONS_MODELS = {
+    "pollinations-schnell": "black-forest-labs/flux.1-schnell",
+    "pollinations-zimage": "tongyi-mai/z-image-turbo",
+    "pollinations-klein": "black-forest-labs/flux.2-klein-4b",
+}
+
+def pollinations_image(mode, prompt, destination):
+    from urllib.parse import quote
+    key = os.environ.get("POLLINATIONS_API_KEY", "").strip()
+    if not key:
+        raise RuntimeError("Pollinations API key missing")
+    model = POLLINATIONS_MODELS[mode]
+    url = "https://gen.pollinations.ai/image/" + quote(prompt[:2048], safe="")
+    try:
+        response = requests.get(url, headers={"Authorization": "Bearer " + key},
+                                params={"model": model, "width": 1280, "height": 720},
+                                timeout=180, allow_redirects=False)
+    except requests.RequestException:
+        raise RuntimeError("Pollinations connection failed") from None
+    if not response.ok or response.is_redirect:
+        raise RuntimeError(f"Pollinations HTTP {response.status_code}")
+    with Image.open(BytesIO(response.content)) as img:
+        img.convert("RGB").save(destination, "JPEG", quality=95)
+    print(f"  [media] Pollinations image generated: {model}")
+    return {"provider": "Pollinations", "model": model, "prompt": prompt}
+
+
 def select_image(mode, index, query, destination, local_dir, prompt=None):
     images = sorted(p for p in Path(local_dir).iterdir() if p.suffix.lower() in (".png", ".jpg", ".jpeg", ".webp")) if Path(local_dir).exists() else []
     if mode == "manual":
@@ -151,6 +179,8 @@ def select_image(mode, index, query, destination, local_dir, prompt=None):
         with Image.open(images[index]) as img:
             img.convert("RGB").save(destination, "JPEG", quality=95)
         return {"provider": "local", "file": images[index].name}
+    if mode in POLLINATIONS_MODELS:
+        return pollinations_image(mode, prompt or query, destination)
     if mode == "pixabay":
         return pixabay_media(query, destination)
     if mode == "ai":
