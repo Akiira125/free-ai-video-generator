@@ -91,6 +91,58 @@ def ai_image(prompt, destination):
     print("  [media] Cloudflare AI image generated")
     return {"provider": "Cloudflare Workers AI", "model": MODEL, "prompt": prompt}
 
+
+def pixabay_media(query, destination):
+    key = os.environ.get("PIXABAY_API_KEY", "").strip()
+    if not key:
+        raise RuntimeError("Pixabay API key missing")
+    for kind in ("video", "image"):
+        endpoint = "https://pixabay.com/api/videos/" if kind == "video" else "https://pixabay.com/api/"
+        params = {"key": key, "q": query[:100], "safesearch": "true", "per_page": 10}
+        if kind == "image":
+            params.update({"image_type": "photo", "orientation": "horizontal"})
+        try:
+            response = requests.get(endpoint, params=params, timeout=30)
+            if not response.ok:
+                print(f"  [media] Pixabay HTTP {response.status_code}")
+                continue
+            for hit in response.json().get("hits", []):
+                if kind == "video":
+                    variants = hit.get("videos", {})
+                    item = variants.get("medium") or variants.get("small") or {}
+                    url = item.get("url", "")
+                    if item.get("width", 0) < item.get("height", 0):
+                        continue
+                else:
+                    url = hit.get("largeImageURL", "")
+                if not url.startswith("https://"):
+                    continue
+                try:
+                    target = destination.with_suffix(".mp4") if kind == "video" else destination
+                    with requests.get(url, stream=True, timeout=60) as download:
+                        if not download.ok:
+                            continue
+                        with open(target, "wb") as out:
+                            size = 0
+                            for chunk in download.iter_content(65536):
+                                size += len(chunk)
+                                if size > 100_000_000:
+                                    raise ValueError("Media too large")
+                                out.write(chunk)
+                    if kind == "image":
+                        with Image.open(target) as img:
+                            rgb = img.convert("RGB")
+                        rgb.save(target, "JPEG", quality=95)
+                    print(f"  [media] Pixabay {kind} selected")
+                    return {"provider": "Pixabay", "kind": kind, "source": hit.get("pageURL"),
+                            "artist": hit.get("user"), "license": "Pixabay Content License",
+                            "license_url": "https://pixabay.com/service/license-summary/", "query": query}
+                except (requests.RequestException, OSError, ValueError):
+                    print("  [media] Pixabay download skipped")
+        except (requests.RequestException, ValueError):
+            print("  [media] Pixabay request failed")
+    raise RuntimeError("No suitable Pixabay media found")
+
 def select_image(mode, index, query, destination, local_dir, prompt=None):
     images = sorted(p for p in Path(local_dir).iterdir() if p.suffix.lower() in (".png", ".jpg", ".jpeg", ".webp")) if Path(local_dir).exists() else []
     if mode == "manual":
@@ -99,6 +151,8 @@ def select_image(mode, index, query, destination, local_dir, prompt=None):
         with Image.open(images[index]) as img:
             img.convert("RGB").save(destination, "JPEG", quality=95)
         return {"provider": "local", "file": images[index].name}
+    if mode == "pixabay":
+        return pixabay_media(query, destination)
     if mode == "ai":
         return ai_image(prompt or query, destination)
     if mode in ("internet", "hybrid"):
