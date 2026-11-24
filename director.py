@@ -15,6 +15,10 @@ CREATURES = {"giant_wolf": "Supernatural gray wolf, shoulder height comparable t
 def direct(scenes):
     for scene in scenes:
         p = scene["image_prompt"]
+        for tag, description in {**ENVIRONMENTS, **CREATURES}.items():
+            marker = "[" + tag + "]"
+            if marker in p:
+                p = p.replace(marker, description + " ")
         names = scene.get("characters", [])
         unknown = set(names) - CHARACTERS.keys()
         if unknown:
