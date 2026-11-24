@@ -26,6 +26,7 @@ from urllib.parse import quote
 import requests
 import edge_tts
 from media_sources import select_image
+from director import direct, check_image, cache_key, budget_check
 from PIL import Image
 
 DEFAULT_VOICE = "en-US-AriaNeural"
@@ -68,10 +69,13 @@ def parse_script(path: str):
         lines = [l for l in block.splitlines() if l.strip()]
         image_prompt = None
         search_query = None
+        characters = []
         narration_lines = []
         for line in lines:
             if line.upper().startswith("IMAGE:") and image_prompt is None:
                 image_prompt = line.split(":", 1)[1].strip()
+            elif line.upper().startswith("CHARACTERS:"):
+                characters = [x.strip().lower() for x in line.split(":", 1)[1].split(",") if x.strip()]
             elif line.upper().startswith("SEARCH:"):
                 search_query = line.split(":", 1)[1].strip()
             else:
@@ -81,7 +85,7 @@ def parse_script(path: str):
             continue
         if not image_prompt:
             image_prompt = narration[:200]
-        scenes.append({"image_prompt": image_prompt, "narration": narration, "search_query": search_query or image_prompt.split(",")[0]})
+        scenes.append({"characters": characters, "image_prompt": image_prompt, "narration": narration, "search_query": search_query or image_prompt.split(",")[0]})
 
     if not scenes:
         raise ValueError("No scenes found. Separate scenes with '---' lines.")
@@ -401,9 +405,20 @@ def main():
     ap.add_argument("--rhubarb-bin", default="rhubarb")
     ap.add_argument("--keep-temp", action="store_true")
     ap.add_argument("--media-mode", choices=["manual", "internet", "ai", "hybrid", "pixabay", "pollinations-schnell", "pollinations-zimage", "pollinations-klein"], default="manual")
+    ap.add_argument("--plan-only", action="store_true")
+    ap.add_argument("--budget-milli-usd", type=int, default=40)
     args = ap.parse_args()
 
     settings, scenes = parse_script(args.script)
+    scenes = direct(scenes)
+    if args.plan_only:
+        print(json.dumps(scenes, indent=2, ensure_ascii=False))
+        return
+    cache = Path(".image_cache")
+    cache.mkdir(exist_ok=True)
+    paid = args.media_mode.startswith("pollinations-")
+    missing = sum(not (cache / (cache_key(args.media_mode, x["image_prompt"]) + ".jpg")).exists() for x in scenes)
+    budget_check(args.media_mode, missing, args.budget_milli_usd)
     voice = args.voice or settings["voice"]
     music = args.music or settings["music"]
 
@@ -453,8 +468,17 @@ def main():
             raise RuntimeError("Scene has no visual duration")
         image_path = workdir / f"scene_{i:03}.jpg"
         clip_path = workdir / f"scene_{i:03}.mp4"
-        credit = select_image(args.media_mode, i, scene["search_query"], image_path,
-                              Path(__file__).parent / "assets" / "scenes", prompt=scene["image_prompt"])
+        cached = cache / (cache_key(args.media_mode, scene["image_prompt"]) + ".jpg")
+        if paid and cached.exists():
+            shutil.copy(cached, image_path)
+            credit = {"provider": "Pollinations cache", "mode": args.media_mode, "prompt": scene["image_prompt"]}
+        else:
+            credit = select_image(args.media_mode, i, scene["search_query"], image_path,
+                                  Path(__file__).parent / "assets" / "scenes", prompt=scene["image_prompt"])
+        if credit.get("kind") != "video":
+            credit["technical_quality"] = check_image(image_path)
+            if paid and not cached.exists():
+                shutil.copy(image_path, cached)
         media_credits.append({"scene": i+1, "start": cuts[i], "end": cuts[i+1], **credit})
         if credit.get("kind") == "video":
             inputs = ["-stream_loop", "-1", "-i", str(image_path.with_name(image_path.stem + "_source.mp4"))]
