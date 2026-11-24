@@ -36,7 +36,7 @@ def main():
     report = []
     for i, scene, path in targets:
         prompt = "Inspect actual visible evidence only. " + checks[i] + " Check visible anatomy and objects. For each question explain briefly, including uncertainty. Return PASS, FAIL or UNCERTAIN overall. Expected scene: " + scene["narration"]
-        result = call({"prompt":prompt,"image":"data:image/jpeg;base64,"+base64.b64encode(path.read_bytes()).decode(),"max_tokens":350})
+        result = call({"prompt":prompt,"image":list(path.read_bytes()),"max_tokens":350,"temperature":0.1})
         report.append({"scene":i,"model":MODEL,"review":result})
     Path("vision_report.json").write_text(json.dumps(report,indent=2),encoding="utf-8")
 if __name__ == "__main__":
