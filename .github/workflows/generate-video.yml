@@ -16,6 +16,14 @@ on:
         description: "Optional: override TTS voice (e.g. fa-IR-DilaraNeural, ja-JP-NanamiNeural)"
         required: false
         default: ""
+      media_mode:
+        description: "Media source"
+        type: choice
+        options:
+          - manual
+          - internet
+          - hybrid
+        default: manual
 
 jobs:
   build-video:
@@ -64,16 +72,22 @@ jobs:
           echo "path=$RAW" >> "$GITHUB_OUTPUT"
 
       - name: Generate video
+        env:
+          SCRIPT_PATH: ${{ steps.pick.outputs.path }}
+          VOICE: ${{ github.event.inputs.voice }}
+          MEDIA_MODE: ${{ github.event.inputs.media_mode }}
         run: |
-          EXTRA_ARGS=""
-          if [ -n "${{ github.event.inputs.voice }}" ]; then
-            EXTRA_ARGS="--voice ${{ github.event.inputs.voice }}"
+          EXTRA_ARGS=()
+          if [ -n "$VOICE" ]; then
+            EXTRA_ARGS+=(--voice "$VOICE")
           fi
-          python generate_video.py --script "${{ steps.pick.outputs.path }}" --out output/final_video.mp4 $EXTRA_ARGS
+          python generate_video.py --script "$SCRIPT_PATH" --out output/final_video.mp4 --media-mode "${MEDIA_MODE:-manual}" "${EXTRA_ARGS[@]}"
 
       - name: Upload video artifact
         uses: actions/upload-artifact@v4
         with:
           name: final-video
-          path: output/final_video.mp4
+          path: |
+            output/final_video.mp4
+            output/media_credits.json
           retention-days: 14
