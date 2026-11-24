@@ -416,44 +416,62 @@ def main():
 
     print(f"Loaded {len(scenes)} scene(s). Voice: {voice}. Music: {music or 'none'}")
 
+    # One continuous narration; align visual cuts using TTS word boundaries.
+    import re
+    def words(text):
+        return re.findall(r"\w+", text.casefold())
+    narration = " ".join(scene["narration"] for scene in scenes)
+    audio_mp3 = workdir / "narration.mp3"
+    async def narrate():
+        marks = []
+        communicate = edge_tts.Communicate(narration, voice, boundary="WordBoundary")
+        with open(audio_mp3, "wb") as f:
+            async for chunk in communicate.stream():
+                if chunk["type"] == "audio":
+                    f.write(chunk["data"])
+                elif chunk["type"] == "WordBoundary":
+                    marks.extend([(w, chunk["offset"] / 10000000) for w in words(chunk["text"])])
+        return marks
+    marks = asyncio.run(narrate())
+    total = get_duration(audio_mp3)
+    expected = words(narration)
+    if [w for w, _ in marks] != expected:
+        raise RuntimeError("Narration word alignment mismatch; refusing inaccurate visual timing")
+    cuts = [0.0]
+    count = 0
+    for scene in scenes[:-1]:
+        count += len(words(scene["narration"]))
+        cuts.append(marks[count][1])
+    cuts.append(total)
+    frames = [round(t * FPS) for t in cuts]
+    frames[-1] = math.ceil(total * FPS)
     clip_paths = []
     media_credits = []
     for i, scene in enumerate(scenes):
-        print(f"\n[{i+1}/{len(scenes)}] {scene['narration'][:70]}...")
-        audio_mp3 = workdir / f"scene_{i:03}.mp3"
+        nframes = frames[i+1] - frames[i]
+        if nframes <= 0:
+            raise RuntimeError("Scene has no visual duration")
         image_path = workdir / f"scene_{i:03}.jpg"
         clip_path = workdir / f"scene_{i:03}.mp4"
-
-        print("  -> generating narration (edge-tts)")
-        synthesize_narration(scene["narration"], voice, audio_mp3)
-        duration = get_duration(audio_mp3) + 0.3
-        print(f"  -> generating background: {scene['image_prompt'][:70]}...")
         credit = select_image(args.media_mode, i, scene["search_query"], image_path,
                               Path(__file__).parent / "assets" / "scenes", prompt=scene["image_prompt"])
-        media_credits.append({"scene": i + 1, **credit})
-
+        media_credits.append({"scene": i+1, "start": cuts[i], "end": cuts[i+1], **credit})
         if credit.get("kind") == "video":
-            print("  -> rendering Pixabay video")
-            run(["ffmpeg", "-y", "-stream_loop", "-1", "-i", str(image_path.with_name(image_path.stem + "_source.mp4")),
-                 "-i", str(audio_mp3), "-map", "0:v:0", "-map", "1:a:0",
-                 "-vf", f"scale={CANVAS_W}:{CANVAS_H}:force_original_aspect_ratio=increase,crop={CANVAS_W}:{CANVAS_H},setsar=1,fps={FPS}",
-                 "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "-ar", "48000", "-ac", "2",
-                 "-shortest", "-loglevel", "error", str(clip_path)])
+            inputs = ["-stream_loop", "-1", "-i", str(image_path.with_name(image_path.stem + "_source.mp4"))]
+            vf = f"scale={CANVAS_W}:{CANVAS_H}:force_original_aspect_ratio=increase,crop={CANVAS_W}:{CANVAS_H},setsar=1,fps={FPS}"
         else:
-            background = prepare_background(image_path, CANVAS_W, CANVAS_H)
-            background.save(image_path, "JPEG", quality=95)
-            print("  -> rendering full-screen illustration")
-            run(["ffmpeg", "-y", "-loop", "1", "-framerate", str(FPS),
-                 "-i", str(image_path), "-i", str(audio_mp3),
-                 "-map", "0:v:0", "-map", "1:a:0", "-c:v", "libx264",
-                 "-tune", "stillimage", "-pix_fmt", "yuv420p",
-                 "-c:a", "aac", "-ar", "48000", "-ac", "2",
-                 "-shortest", "-loglevel", "error", str(clip_path)])
+            prepare_background(image_path, CANVAS_W, CANVAS_H).save(image_path, "JPEG", quality=95)
+            inputs = ["-i", str(image_path)]
+            vf = f"scale=3840:2160,zoompan=z='1+0.045*on/{max(1,nframes-1)}':x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d={nframes}:s={CANVAS_W}x{CANVAS_H}:fps={FPS},setsar=1"
+        run(["ffmpeg", "-y", *inputs, "-vf", vf, "-frames:v", str(nframes),
+             "-an", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-loglevel", "error", str(clip_path)])
         clip_paths.append(clip_path)
-
-    print("\nConcatenating all scenes...")
+    visuals = workdir / "visuals.mp4"
+    concat_clips(clip_paths, visuals, workdir)
     no_music_path = workdir / "combined_no_music.mp4"
-    concat_clips(clip_paths, no_music_path, workdir)
+    run(["ffmpeg", "-y", "-i", str(visuals), "-i", str(audio_mp3),
+         "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", "-c:a", "aac",
+         "-shortest", "-loglevel", "error", str(no_music_path)])
 
     if music and Path(music).exists():
         print("Mixing background music...")
