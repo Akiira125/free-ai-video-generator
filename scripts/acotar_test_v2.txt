@@ -1,0 +1,27 @@
+VOICE: en-US-AriaNeural
+MUSIC:
+
+---
+IMAGE: A vast medieval fantasy landscape divided by an ancient magical stone wall, distant human village on one side and luminous enchanted woodland on the other, cinematic realistic dark fantasy, film still, natural lighting, landscape 16:9, no text, no cartoon
+In a world divided between mortals and immortal Fae, fear keeps the two peoples apart.
+---
+IMAGE: Interior of a poor medieval cottage, three young adult sisters and their aging father gathered around an almost empty wooden table, worn clothes, cold hearth, cinematic realistic dark fantasy, film still, natural lighting, landscape 16:9, no text, no cartoon
+Feyre Archeron lives in poverty with her father and two older sisters.
+---
+IMAGE: Young adult woman with long brown hair, gray blue eyes, worn brown leather winter coat and wooden bow leaving a humble cottage, cinematic realistic dark fantasy, film still, natural lighting, landscape 16:9, no text, no cartoon
+To keep them alive, she takes her bow and goes hunting.
+---
+IMAGE: Wide view of a dense snowy pine forest, lone brown haired huntress in worn brown leather coat walking through deep snow, cinematic realistic dark fantasy, film still, natural lighting, landscape 16:9, no text, no cartoon
+Deep in the winter forest, food is scarce and danger is everywhere.
+---
+IMAGE: Enormous gray wolf emerging between snowy pine trees, brown haired huntress watching from behind a tree, cinematic realistic dark fantasy, film still, natural lighting, landscape 16:9, no text, no cartoon
+One day, she encounters an unusually large gray wolf.
+---
+IMAGE: Brown haired young adult huntress in worn brown leather winter coat drawing and releasing a wooden bow in snowy forest, cinematic side view, no gore, cinematic realistic dark fantasy, film still, natural lighting, landscape 16:9, no text, no cartoon
+She releases an arrow, unaware that her decision will change everything.
+---
+IMAGE: Huge horned magical beast with golden fur at the doorway of a poor medieval cottage, startled brown haired huntress, dramatic dusk, cinematic realistic dark fantasy, film still, natural lighting, landscape 16:9, no text, no cartoon
+A mysterious beast comes to claim her and takes her into the magical land of Prythian.
+---
+IMAGE: Magnificent enchanted spring manor with flowering gardens and ancient trees, golden sunlight, brown haired huntress seen from behind, cinematic realistic dark fantasy, film still, natural lighting, landscape 16:9, no text, no cartoon
+There, a beautiful estate hides a powerful High Lord and a terrible secret.
