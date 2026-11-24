@@ -30,7 +30,7 @@ from PIL import Image
 
 DEFAULT_VOICE = "en-US-AriaNeural"
 CANVAS_W, CANVAS_H = 1920, 1080
-FPS = 12
+FPS = 30
 POLLINATIONS_BASE = "https://image.pollinations.ai/prompt"
 ANIME_STYLE_SUFFIX = (", anime background art, cel shaded, Studio Ghibli inspired, hand-painted anime "
                       "illustration, vibrant anime color palette, no photorealism")
@@ -415,40 +415,32 @@ def main():
     workdir.mkdir(parents=True)
 
     print(f"Loaded {len(scenes)} scene(s). Voice: {voice}. Music: {music or 'none'}")
-    rig = CharacterRig(CHARACTER_DIR)
 
     clip_paths = []
     media_credits = []
     for i, scene in enumerate(scenes):
         print(f"\n[{i+1}/{len(scenes)}] {scene['narration'][:70]}...")
         audio_mp3 = workdir / f"scene_{i:03}.mp3"
-        audio_wav = workdir / f"scene_{i:03}.wav"
         image_path = workdir / f"scene_{i:03}.jpg"
-        rhubarb_json = workdir / f"scene_{i:03}_mouth.json"
         clip_path = workdir / f"scene_{i:03}.mp4"
 
         print("  -> generating narration (edge-tts)")
         synthesize_narration(scene["narration"], voice, audio_mp3)
         duration = get_duration(audio_mp3) + 0.3
-        mp3_to_wav(audio_mp3, audio_wav)
-
-        print("  -> computing lip-sync (Rhubarb)")
-        mouth_cues = run_rhubarb(audio_wav, rhubarb_json, args.rhubarb_bin)
-        if mouth_cues is None:
-            mouth_cues = approximate_mouth_cues(audio_wav, duration)
-        blink_schedule = make_blink_schedule(duration)
-        gesture_schedule = make_gesture_schedule(duration)
-
         print(f"  -> generating background: {scene['image_prompt'][:70]}...")
         credit = select_image(args.media_mode, i, scene["search_query"], image_path,
                               Path(__file__).parent / "assets" / "scenes", prompt=scene["image_prompt"])
         media_credits.append({"scene": i + 1, **credit})
 
         background = prepare_background(image_path, CANVAS_W, CANVAS_H)
-
-        print(f"  -> rendering animated scene ({duration:.1f}s, {int(duration*FPS)} frames)")
-        render_scene(background, rig, mouth_cues, blink_schedule, gesture_schedule, duration,
-                     audio_mp3, clip_path, char_scale=args.character_scale)
+        background.save(image_path, "JPEG", quality=95)
+        print("  -> rendering full-screen illustration")
+        run(["ffmpeg", "-y", "-loop", "1", "-framerate", str(FPS),
+             "-i", str(image_path), "-i", str(audio_mp3),
+             "-map", "0:v:0", "-map", "1:a:0", "-c:v", "libx264",
+             "-tune", "stillimage", "-pix_fmt", "yuv420p",
+             "-c:a", "aac", "-ar", "48000", "-ac", "2",
+             "-shortest", "-loglevel", "error", str(clip_path)])
         clip_paths.append(clip_path)
 
     print("\nConcatenating all scenes...")
