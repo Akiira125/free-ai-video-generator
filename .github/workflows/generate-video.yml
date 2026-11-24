@@ -22,6 +22,7 @@ on:
         options:
           - manual
           - internet
+          - ai
           - hybrid
         default: manual
 
@@ -76,6 +77,8 @@ jobs:
           SCRIPT_PATH: ${{ steps.pick.outputs.path }}
           VOICE: ${{ github.event.inputs.voice }}
           MEDIA_MODE: ${{ github.event.inputs.media_mode }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           EXTRA_ARGS=()
           if [ -n "$VOICE" ]; then
