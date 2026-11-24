@@ -118,7 +118,7 @@ def pixabay_media(query, destination):
                 if not url.startswith("https://"):
                     continue
                 try:
-                    target = destination.with_suffix(".mp4") if kind == "video" else destination
+                    target = destination.with_name(destination.stem + "_source.mp4") if kind == "video" else destination
                     with requests.get(url, stream=True, timeout=60) as download:
                         if not download.ok:
                             continue
