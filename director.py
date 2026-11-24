@@ -9,6 +9,9 @@ CHARACTERS = {
     "feyre": "Feyre: young adult woman, long chestnut brown hair, gray-blue eyes, oval face, worn brown leather winter coat, wooden bow.",
     "beast": "Tamlin in beast form: massive supernatural quadruped, golden fur, wolf-like muzzle, curved horns, powerful feline body."
 }
+ENVIRONMENTS = {"winter_forest": "Dense snow-covered pine forest, deep white snow on ground, cold overcast winter daylight, no grassy hills or mountains."}
+CREATURES = {"giant_wolf": "Supernatural gray wolf, shoulder height comparable to an adult human, thick gray fur, intimidating wild animal."}
+
 def direct(scenes):
     for scene in scenes:
         p = scene["image_prompt"]
