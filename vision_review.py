@@ -20,7 +20,15 @@ def main():
     def call(payload):
         r = requests.post(url, headers=headers, json=payload, timeout=90)
         if not r.ok:
-            raise RuntimeError(f"Cloudflare review HTTP {r.status_code}")
+            try:
+                errors = r.json().get("errors", [])
+                detail = str(errors)[:1500]
+            except ValueError:
+                detail = "Non-JSON response"
+            for secret in (account, os.environ["CLOUDFLARE_API_TOKEN"]):
+                if secret:
+                    detail = detail.replace(secret, "[redacted]")
+            raise RuntimeError(f"Cloudflare review HTTP {r.status_code}: {detail}")
         data = r.json()
         if not data.get("success"):
             raise RuntimeError("Cloudflare review failed")
