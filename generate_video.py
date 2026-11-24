@@ -400,7 +400,7 @@ def main():
     ap.add_argument("--character-scale", type=float, default=0.85)
     ap.add_argument("--rhubarb-bin", default="rhubarb")
     ap.add_argument("--keep-temp", action="store_true")
-    ap.add_argument("--media-mode", choices=["manual", "internet", "ai", "hybrid", "pixabay"], default="manual")
+    ap.add_argument("--media-mode", choices=["manual", "internet", "ai", "hybrid", "pixabay", "pollinations-schnell", "pollinations-zimage", "pollinations-klein"], default="manual")
     args = ap.parse_args()
 
     settings, scenes = parse_script(args.script)
