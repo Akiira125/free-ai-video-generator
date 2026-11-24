@@ -1,5 +1,8 @@
 """Media providers: local files and openly licensed Wikimedia Commons images."""
 import re
+import os
+import base64
+from PIL import ImageDraw
 from collections import Counter
 from pathlib import Path
 from io import BytesIO
@@ -20,7 +23,10 @@ def _search_image(query, destination):
     response.raise_for_status()
     pages = response.json().get("query", {}).get("pages", {}).values()
     for page in sorted(pages, key=lambda p: p.get("index", 999)):
-        info = (page.get("imageinfo") or [{}])[0]
+        if not page.get("imageinfo"):
+            rejected["missing imageinfo"] += 1
+            continue
+        info = page["imageinfo"][0]
         meta = info.get("extmetadata", {})
         license_name = meta.get("LicenseShortName", {}).get("value", "").strip()
         if not (license_name.lower() in ("cc0", "cc0 1.0", "public domain") or re.fullmatch(r"CC BY(?:-SA)? (?:1\.0|2\.0|2\.5|3\.0|4\.0)(?: [A-Za-z]{2})?", license_name)):
@@ -53,7 +59,7 @@ def _search_image(query, destination):
 
 
 def internet_image(query, destination):
-    alternatives = {"gray wolf": ["Canis lupus", "grey wolf", "wolf"], "snowy forest": ["winter forest", "snow forest"], "Neuschwanstein Castle": ["Schloss Neuschwanstein"]}
+    alternatives = {"gray wolf": ["Canis lupus", "grey wolf", "wolf"], "snowy forest": ["winter forest", "snow forest"], "Neuschwanstein Castle": ["Schloss Neuschwanstein", "Neuschwanstein", "Bavarian castle", "fairy tale castle"]}
     for term in dict.fromkeys([query, *alternatives.get(query, [])]):
         credit = _search_image(term, destination)
         if credit is not None:
@@ -61,14 +67,53 @@ def internet_image(query, destination):
             return credit
     raise RuntimeError(f"No suitable openly licensed image found for: {query}")
 
-def select_image(mode, index, query, destination, local_dir):
+MODEL = "@cf/black-forest-labs/flux-1-schnell"
+
+def ai_image(prompt, destination):
+    account = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "").strip()
+    token = os.environ.get("CLOUDFLARE_API_TOKEN", "").strip()
+    if not re.fullmatch(r"[a-fA-F0-9]{32}", account) or not token:
+        raise RuntimeError("Cloudflare credentials missing or invalid")
+    url = f"https://api.cloudflare.com/client/v4/accounts/{account}/ai/run/{MODEL}"
+    response = requests.post(url, headers={"Authorization": f"Bearer {token}"},
+                             json={"prompt": prompt[:2048], "steps": 4}, timeout=120)
+    if not response.ok:
+        raise RuntimeError(f"Cloudflare HTTP {response.status_code}")
+    if response.headers.get("Content-Type", "").startswith("image/"):
+        data = response.content
+    else:
+        payload = response.json()
+        if payload.get("success") is False:
+            raise RuntimeError("Cloudflare inference failed")
+        data = base64.b64decode(payload["result"]["image"], validate=True)
+    with Image.open(BytesIO(data)) as img:
+        img.convert("RGB").save(destination, "JPEG", quality=95)
+    print("  [media] Cloudflare AI image generated")
+    return {"provider": "Cloudflare Workers AI", "model": MODEL, "prompt": prompt}
+
+def select_image(mode, index, query, destination, local_dir, prompt=None):
     images = sorted(p for p in Path(local_dir).iterdir() if p.suffix.lower() in (".png", ".jpg", ".jpeg", ".webp")) if Path(local_dir).exists() else []
-    if mode == "manual" or (mode == "hybrid" and index < len(images)):
+    if mode == "manual":
         if index >= len(images):
             raise RuntimeError(f"Missing local image for scene {index + 1}")
         with Image.open(images[index]) as img:
             img.convert("RGB").save(destination, "JPEG", quality=95)
         return {"provider": "local", "file": images[index].name}
+    if mode == "ai":
+        return ai_image(prompt or query, destination)
     if mode in ("internet", "hybrid"):
-        return internet_image(query, destination)
+        try:
+            return internet_image(query, destination)
+        except (RuntimeError, requests.RequestException, ValueError) as exc:
+            if mode == "internet":
+                raise
+            print("  [media] Internet failed; trying Cloudflare")
+        try:
+            return ai_image(prompt or query, destination)
+        except (RuntimeError, requests.RequestException, ValueError, KeyError, OSError):
+            print("  [media] Cloudflare failed; using labeled placeholder")
+            img = Image.new("RGB", (1280, 720), (24, 32, 48))
+            ImageDraw.Draw(img).text((40, 340), f"Visual unavailable - scene {index + 1}", fill="white")
+            img.save(destination, "JPEG")
+            return {"provider": "placeholder", "query": query}
     raise ValueError(f"Unsupported media mode: {mode}")
