@@ -24,6 +24,7 @@ on:
           - internet
           - ai
           - hybrid
+          - pixabay
         default: manual
 
 jobs:
@@ -77,6 +78,7 @@ jobs:
           SCRIPT_PATH: ${{ steps.pick.outputs.path }}
           VOICE: ${{ github.event.inputs.voice }}
           MEDIA_MODE: ${{ github.event.inputs.media_mode }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
