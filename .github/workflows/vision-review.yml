@@ -1,0 +1,40 @@
+name: Cloudflare Vision Review
+on:
+  workflow_dispatch:
+    inputs:
+      accept_license:
+        description: "Send Meta license acceptance (first activation)"
+        type: boolean
+        default: true
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Restore existing images
+        uses: actions/cache/restore@v4
+        with:
+          path: .image_cache
+          key: images-v1-review-${{ github.run_id }}
+          restore-keys: images-v1-
+      - name: Review cached images
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCEPT_LICENSE: ${{ inputs.accept_license }}
+        run: |
+          if [ "$ACCEPT_LICENSE" = "true" ]; then
+            python vision_review.py --accept-license
+          else
+            python vision_review.py
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vision-report
+          path: vision_report.json
+          if-no-files-found: error
