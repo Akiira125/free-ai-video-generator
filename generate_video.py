@@ -400,7 +400,7 @@ def main():
     ap.add_argument("--character-scale", type=float, default=0.85)
     ap.add_argument("--rhubarb-bin", default="rhubarb")
     ap.add_argument("--keep-temp", action="store_true")
-    ap.add_argument("--media-mode", choices=["manual", "internet", "ai", "hybrid"], default="manual")
+    ap.add_argument("--media-mode", choices=["manual", "internet", "ai", "hybrid", "pixabay"], default="manual")
     args = ap.parse_args()
 
     settings, scenes = parse_script(args.script)
@@ -432,15 +432,23 @@ def main():
                               Path(__file__).parent / "assets" / "scenes", prompt=scene["image_prompt"])
         media_credits.append({"scene": i + 1, **credit})
 
-        background = prepare_background(image_path, CANVAS_W, CANVAS_H)
-        background.save(image_path, "JPEG", quality=95)
-        print("  -> rendering full-screen illustration")
-        run(["ffmpeg", "-y", "-loop", "1", "-framerate", str(FPS),
-             "-i", str(image_path), "-i", str(audio_mp3),
-             "-map", "0:v:0", "-map", "1:a:0", "-c:v", "libx264",
-             "-tune", "stillimage", "-pix_fmt", "yuv420p",
-             "-c:a", "aac", "-ar", "48000", "-ac", "2",
-             "-shortest", "-loglevel", "error", str(clip_path)])
+        if credit.get("kind") == "video":
+            print("  -> rendering Pixabay video")
+            run(["ffmpeg", "-y", "-stream_loop", "-1", "-i", str(image_path.with_suffix(".mp4")),
+                 "-i", str(audio_mp3), "-map", "0:v:0", "-map", "1:a:0",
+                 "-vf", f"scale={CANVAS_W}:{CANVAS_H}:force_original_aspect_ratio=increase,crop={CANVAS_W}:{CANVAS_H},setsar=1,fps={FPS}",
+                 "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "-ar", "48000", "-ac", "2",
+                 "-shortest", "-loglevel", "error", str(clip_path)])
+        else:
+            background = prepare_background(image_path, CANVAS_W, CANVAS_H)
+            background.save(image_path, "JPEG", quality=95)
+            print("  -> rendering full-screen illustration")
+            run(["ffmpeg", "-y", "-loop", "1", "-framerate", str(FPS),
+                 "-i", str(image_path), "-i", str(audio_mp3),
+                 "-map", "0:v:0", "-map", "1:a:0", "-c:v", "libx264",
+                 "-tune", "stillimage", "-pix_fmt", "yuv420p",
+                 "-c:a", "aac", "-ar", "48000", "-ac", "2",
+                 "-shortest", "-loglevel", "error", str(clip_path)])
         clip_paths.append(clip_path)
 
     print("\nConcatenating all scenes...")
