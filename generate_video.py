@@ -25,6 +25,7 @@ from urllib.parse import quote
 
 import requests
 import edge_tts
+from media_sources import select_image
 from PIL import Image
 
 DEFAULT_VOICE = "en-US-AriaNeural"
@@ -66,10 +67,13 @@ def parse_script(path: str):
             continue
         lines = [l for l in block.splitlines() if l.strip()]
         image_prompt = None
+        search_query = None
         narration_lines = []
         for line in lines:
             if line.upper().startswith("IMAGE:") and image_prompt is None:
                 image_prompt = line.split(":", 1)[1].strip()
+            elif line.upper().startswith("SEARCH:"):
+                search_query = line.split(":", 1)[1].strip()
             else:
                 narration_lines.append(line.strip())
         narration = " ".join(narration_lines).strip()
@@ -77,7 +81,7 @@ def parse_script(path: str):
             continue
         if not image_prompt:
             image_prompt = narration[:200]
-        scenes.append({"image_prompt": image_prompt, "narration": narration})
+        scenes.append({"image_prompt": image_prompt, "narration": narration, "search_query": search_query or image_prompt.split(",")[0]})
 
     if not scenes:
         raise ValueError("No scenes found. Separate scenes with '---' lines.")
@@ -396,6 +400,7 @@ def main():
     ap.add_argument("--character-scale", type=float, default=0.85)
     ap.add_argument("--rhubarb-bin", default="rhubarb")
     ap.add_argument("--keep-temp", action="store_true")
+    ap.add_argument("--media-mode", choices=["manual", "internet", "hybrid"], default="manual")
     args = ap.parse_args()
 
     settings, scenes = parse_script(args.script)
@@ -413,6 +418,7 @@ def main():
     rig = CharacterRig(CHARACTER_DIR)
 
     clip_paths = []
+    media_credits = []
     for i, scene in enumerate(scenes):
         print(f"\n[{i+1}/{len(scenes)}] {scene['narration'][:70]}...")
         audio_mp3 = workdir / f"scene_{i:03}.mp3"
@@ -434,10 +440,9 @@ def main():
         gesture_schedule = make_gesture_schedule(duration)
 
         print(f"  -> generating background: {scene['image_prompt'][:70]}...")
-        scene_images = sorted((Path(__file__).parent / "assets" / "scenes").glob("*.png"))
-        if i >= len(scene_images):
-            raise RuntimeError(f"Image manquante pour la scène {i + 1}")
-        shutil.copyfile(scene_images[i], image_path)
+        credit = select_image(args.media_mode, i, scene["search_query"], image_path,
+                              Path(__file__).parent / "assets" / "scenes")
+        media_credits.append({"scene": i + 1, **credit})
 
         background = prepare_background(image_path, CANVAS_W, CANVAS_H)
 
@@ -457,6 +462,8 @@ def main():
         if music:
             print(f"  (music file '{music}' not found, skipping)")
         shutil.copy(no_music_path, out_path)
+
+    (out_path.parent / "media_credits.json").write_text(json.dumps(media_credits, ensure_ascii=False, indent=2), encoding="utf-8")
 
     if not args.keep_temp:
         shutil.rmtree(workdir, ignore_errors=True)
