@@ -26,6 +26,7 @@ from urllib.parse import quote
 import requests
 import edge_tts
 from media_sources import select_image
+from camera_motion import camera_filter
 from director import direct, check_image, cache_key, budget_check
 from PIL import Image
 
@@ -513,7 +514,7 @@ def main():
         else:
             prepare_background(image_path, CANVAS_W, CANVAS_H).save(image_path, "JPEG", quality=95)
             inputs = ["-i", str(image_path)]
-            vf = f"scale=3840:2160,zoompan=z='1+0.045*on/{max(1,nframes-1)}':x='iw/2-iw/zoom/2':y='ih/2-ih/zoom/2':d={nframes}:s={CANVAS_W}x{CANVAS_H}:fps={FPS},setsar=1"
+            vf = camera_filter(i, nframes, CANVAS_W, CANVAS_H, FPS)
         run(["ffmpeg", "-y", *inputs, "-vf", vf, "-frames:v", str(nframes),
              "-an", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-loglevel", "error", str(clip_path)])
         clip_paths.append(clip_path)
