@@ -1,0 +1,28 @@
+name: Cinematic Narration ABC Test
+on: workflow_dispatch
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      OMP_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg espeak-ng libsndfile1
+      - run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install "kokoro==0.9.4" soundfile edge-tts requests Pillow
+      - uses: actions/cache/restore@v4
+        with:
+          path: .image_cache
+          key: images-v1-narration-${{ github.run_id }}
+          restore-keys: images-v1-
+      - run: python narration_ab_test.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: narration-comparison
+          path: narration_comparison/
+          if-no-files-found: error
