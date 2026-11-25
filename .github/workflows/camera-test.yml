@@ -1,0 +1,36 @@
+name: Cinematic Camera Test
+on: workflow_dispatch
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - uses: actions/cache/restore@v4
+        with:
+          path: .image_cache
+          key: images-v1-camera-${{ github.run_id }}
+          restore-keys: images-v1-
+      - name: Render three camera movements
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+          from camera_motion import camera_filter
+          images = sorted(Path(".image_cache").glob("*.jpg"))
+          if len(images) < 3:
+              raise RuntimeError("Need three cached images; no API calls made")
+          out = Path("camera_preview")
+          out.mkdir(exist_ok=True)
+          for i, image in enumerate(images[:3]):
+              subprocess.run(["ffmpeg","-y","-i",str(image),"-vf",camera_filter(i,600),"-frames:v","600","-an","-c:v","libx264","-pix_fmt","yuv420p",str(out / f"shot{i}.mp4")],check=True)
+          (out/"list.txt").write_text("\n".join(f"file 'shot{i}.mp4'" for i in range(3)))
+          subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(out/"list.txt"),"-c","copy",str(out/"preview.mp4")],check=True)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: camera-preview
+          path: camera_preview/preview.mp4
