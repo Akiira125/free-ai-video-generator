@@ -1,0 +1,26 @@
+name: Cinematic Voice Test
+on: workflow_dispatch
+jobs:
+  voices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      OMP_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install audio tools
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg espeak-ng libsndfile1
+      - name: Install voice engines
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install "kokoro==0.9.4" soundfile edge-tts
+      - name: Generate five voice samples
+        run: python voice_test.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cinematic-voices
+          path: voice_preview/
+          if-no-files-found: error
