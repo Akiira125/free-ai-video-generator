@@ -1,0 +1,15 @@
+VOICE: en-US-AriaNeural
+MUSIC:
+
+---
+IMAGE: [painted] [human] Interior of a humble medieval cottage in winter, mortal father and three daughters around a nearly empty table, cold hearth, warm candlelight contrasting with blue snow beyond window, Feyre near the door with bow.
+CHARACTERS: feyre
+Beyond the ancient wall lies a world that mortals have learned to fear. On the human side, winter has left Feyre Archeron and her family struggling to survive. With little food remaining and no one else able to provide for them, she takes her bow and ventures into the forest.
+---
+IMAGE: [painted] [winter_forest] [giant_wolf] Feyre concealed behind a foreground pine, enormous gray wolf far away in a snowy clearing, dramatic blue winter light, tense composition.
+CHARACTERS: feyre
+Among the silent trees, Feyre encounters a wolf unlike any she has ever seen. Its enormous size makes her wonder whether it belongs to the magical world beyond the wall. She draws her bow and fires, unaware that this single decision will change the course of her life.
+---
+IMAGE: [painted] [high_fae] Magnificent spring manor surrounded by flowering gardens, a distant elegant High Fae lord with subtly pointed ears, mortal Feyre seen from behind in foreground, golden light, sweeping landscape.
+CHARACTERS: feyre
+A mysterious beast arrives to claim a debt and carries Feyre into Prythian, the realm of the immortal Fae. There, winter gives way to an enchanting spring. Yet beneath the beauty of this strange new home lies a dangerous secret, and the High Lord is not quite what he seems.
