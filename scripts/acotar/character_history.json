@@ -1,0 +1,15 @@
+{
+  "book": "acotar",
+  "characters": {
+    "feyre": {
+      "motivation": "Childhood promise to dying mother to care for family",
+      "source_status": "present in pilot V1 and reader feedback; primary text not checked",
+      "hunting_start_age": {
+        "value": 11,
+        "status": "reader recollection, unverified"
+      },
+      "revelation_chapter": null
+    }
+  },
+  "timeline_status": "chapter-level verification pending"
+}
