@@ -1,0 +1,115 @@
+VOICE: kokoro:af_heart
+CHARACTER_REGISTRY: scripts/acotar/characters.json
+MUSIC:
+
+---
+IMAGE: [painted] A lone adult brunette huntress in a vast snowy pine forest, wooden bow, cold blue light, cinematic oil painting, rounded human ears
+CHARACTERS: feyre
+In the depths of winter, nineteen-year-old Feyre Archeron ventures into a forest where finding a single animal could mean the difference between eating and going hungry. She would rather spend her days painting, but there is little room for dreams when three other people depend on her. And although she is the youngest of three sisters, she has become the one responsible for keeping them alive. To understand why she keeps returning to this dangerous forest, we need to understand a promise she made long before this winter.
+---
+IMAGE: [painted] Four people only inside a poor cottage: three adult sisters and elderly father with injured leg, warm hearth, painterly realism
+CHARACTERS: feyre
+The Archerons were once wealthy. When their fortune collapsed, their father was left with an injured leg and the family fell into poverty. Nesta, the eldest, struggles with bitterness; Elain is gentler but unprepared for their new circumstances. Before her mother died, Feyre had promised to look after the family. She was still a child. As the years passed, she learned to hunt, and that childhood promise became the burden around which she organized her life. It helps explain why she continues to provide for her sisters even when their dependence frustrates her.
+---
+IMAGE: [painted] Huge gray wolf and small doe in snowy forest clearing, distant huntress crouched behind pine, epic oil painting
+CHARACTERS: feyre
+In the forest, Feyre spots a deer. For her family, it represents food they desperately need. But an enormous gray wolf emerges, threatening to take the same prey. Its size makes her wonder whether it is a Fae in animal form. Generations of humans have grown up fearing the immortal beings beyond the wall, remembering a history of enslavement and war. For Feyre, the animal is therefore more than a rival hunter. It may represent the very people she has been taught to fear.
+---
+IMAGE: [painted] Human huntress with lowered wooden bow, distant fallen gray wolf, snowy woodland, non-graphic painterly scene
+CHARACTERS: feyre
+Feyre kills the wolf. Her decision is shaped both by the need to survive and by her hostility toward the Fae. She cannot know for certain what the creature is, but she acts anyway. This is the first great contradiction of her story: a young woman capable of extraordinary sacrifice for her family can also be merciless toward someone she considers an enemy. What appears to be a successful hunt will soon become the reason she must leave everything behind.
+---
+IMAGE: [painted] Adult brunette huntress selling folded pelts to scarred woman merchant in medieval winter market, cinematic oil painting
+CHARACTERS: feyre
+At the village market, a scarred mercenary offers Feyre a generous price for the pelts. Their encounter brings unsettling news about the dangers near the border. The wall separating the human lands from Prythian is supposed to protect people like Feyre, but the warnings suggest that this protection is becoming increasingly uncertain. For a moment, the money offers her family some relief. It cannot protect them from what is about to arrive at their door.
+---
+IMAGE: [painted] Massive golden four-legged beast with curved horns and wolf-like muzzle at cottage doorway, three adult women and father inside, cinematic oil painting
+CHARACTERS: feyre, beast
+An enormous golden beast confronts the Archerons at their cottage. The wolf Feyre killed was indeed a Fae, and the creature demands payment for his death under the treaty between their peoples. Feyre faces a choice between death and a life across the wall in Prythian. The danger she believed belonged to distant legends has reached her own home. By agreeing to leave, she can survive, but she must abandon the family she has spent years trying to protect.
+---
+IMAGE: [painted] Adult brunette human woman on white horse leaving snowy village toward dark forest, distant golden horned beast, painterly landscape
+CHARACTERS: feyre, beast
+Even as Feyre prepares to depart, her thoughts turn to her sisters and their supplies. Who will feed them when she is gone? The promise to her mother has shaped her life so completely that leaving is not simply a change of home. It means losing the role that has given her a sense of purpose. She travels toward a land she fears, with no certainty about what awaits her there.
+---
+IMAGE: [painted] Magnificent spring estate with flowering gardens beyond winter woodland, solitary human brunette on white horse seen from behind, cinematic classical oil painting
+CHARACTERS: feyre
+Beyond the human lands, the landscape changes dramatically. The cold and deprivation of Feyre's former life give way to the flowering beauty of the Spring Court. Yet its magnificent estate does not mean that she is free. She has entered a world whose inhabitants and rules she barely understands. For the first time in years, her struggle is no longer simply about finding enough food. It is about discovering whether the beliefs that helped her survive can also help her understand the people around her.
+---
+IMAGE: [painted] A masked golden-haired High Fae seated at a grand dining table, green eyes, gold emerald mask, no beast present, cinematic oil painting, refined brushwork, 16:9, no text
+CHARACTERS: tamlin_fae
+The first encounter with Tamlin in his other form changes the meaning of the cottage confrontation. Feyre must reconcile the terrifying creature with a person capable of conversation. Appearance, in this world, is an unreliable guide to identity.
+---
+IMAGE: [painted] Feyre alone at a lavish banquet table, hands hesitant, untouched food, cinematic oil painting, refined brushwork, 16:9, no text
+CHARACTERS: feyre
+The abundance around her offers a cruel contrast with the hunger she has left behind. Food should mean safety, yet here she sees it as a possible trap. Her childhood understanding of magic makes even hospitality feel dangerous.
+---
+IMAGE: [painted] Red-haired adult fae with fox mask, facial scar and golden artificial eye, solemn expression, cinematic oil painting, refined brushwork, 16:9, no text
+Lucien introduces a different kind of tension. His hostility has a personal cause: Andras was his friend. The wolf now has a name, and the audience is invited to reconsider a death that originally seemed like an ordinary act of survival.
+---
+IMAGE: [painted] Feyre and masked Tamlin across a dining table, distinct human rounded ears and fae pointed ears, cinematic oil painting, refined brushwork, 16:9, no text
+CHARACTERS: feyre,tamlin_fae
+The conversation establishes an unsettling distinction between freedom and belonging. Feyre is permitted to move within Prythian, but that does not restore her ability to return home. The boundary matters more to her than the comforts within it.
+---
+IMAGE: [painted] Feyre in a luxurious guest bedroom, practical tunic and trousers, folded dress on chair, cinematic oil painting, refined brushwork, 16:9, no text
+CHARACTERS: feyre
+Her preference for practical clothing reflects the habits that kept her alive. A beautiful room does not immediately transform a hunter into a willing guest. She assesses her surroundings according to whether they help her defend herself or leave.
+---
+IMAGE: [painted] Feyre at a manor window looking toward distant wooded horizon, cinematic oil painting, refined brushwork, 16:9, no text
+CHARACTERS: feyre
+The question of her family's survival continues to dominate her thoughts. This is why Tamlin's assurances matter so much: if someone else can provide for them, Feyre might have a future that is not entirely defined by her promise.
+---
+IMAGE: [painted] Tamlin masked, seated in a sunlit manor interior, restrained expression, cinematic oil painting, refined brushwork, 16:9, no text
+CHARACTERS: tamlin_fae
+Tamlin's willingness to provide for the Archerons complicates the image of him as a straightforward villain. It is too early to mistake that generosity for trust, however. His power over Feyre's circumstances remains immense.
+---
+IMAGE: [painted] Symbolic empty masquerade hall, abandoned gold animal masks, candles, atmospheric painting, cinematic oil painting, refined brushwork, 16:9, no text
+The masks suggest that the inhabitants of this beautiful estate are themselves caught in circumstances they cannot control. The magical affliction is an important counterpoint to the apparent perfection of the Spring Court. Beauty can conceal vulnerability as easily as danger.
+---
+IMAGE: [painted] Flowering garden with distant shadows and subtly fading magical light, cinematic oil painting, refined brushwork, 16:9, no text
+The threat of a spreading magical sickness expands the story beyond one human's punishment. Feyre has crossed into a society with problems of its own. The questions surrounding those problems will gradually become as important as her wish to escape.
+---
+IMAGE: [painted] Feyre walking alone among garden hedges, observant posture, cinematic oil painting, refined brushwork, 16:9, no text
+CHARACTERS: feyre
+Feyre approaches the gardens with the instincts of a hunter, evaluating unfamiliar ground instead of simply admiring it. Her resourcefulness remains intact even though she has lost the familiar environment in which she developed it.
+---
+IMAGE: [painted] Garden path with faint indistinct silhouettes in foliage, no identifiable monsters, cinematic oil painting, refined brushwork, 16:9, no text
+The estate's unseen presences emphasize how little human senses can reveal about Prythian. The uncertainty is more effective than a visible monster: Feyre cannot yet distinguish an innocent mystery from a genuine threat.
+---
+IMAGE: [painted] Feyre at dinner, discreetly concealing a small table knife, nonviolent, cinematic oil painting, refined brushwork, 16:9, no text
+CHARACTERS: feyre
+Her preparations reveal how far hospitality is from producing confidence. Feyre regards a simple utensil as a possible means of independence. We understand the gesture better when we remember the years during which she could rely primarily on herself.
+---
+IMAGE: [painted] Symbolic memory of an adult mother's hand holding a little girl's hand, soft subdued painting, cinematic oil painting, refined brushwork, 16:9, no text
+The memory of her mother gives this struggle an emotional dimension. Feyre was only eight when she lost her. The responsibility she associates with that loss has survived much longer than the family's fortune, and it remains central to her understanding of loyalty.
+---
+IMAGE: [painted] Feyre beside a small packed travel bag in her bedroom, nighttime, cinematic oil painting, refined brushwork, 16:9, no text
+CHARACTERS: feyre
+Preparing to leave gives her a sense of agency. There is something poignant about a woman surrounded by unfamiliar wealth who places greater value on a modest bag of supplies. Freedom, for Feyre, is still inseparable from the ability to act for herself.
+---
+IMAGE: [painted] Feyre and red-haired masked Lucien riding horses on a woodland path, cinematic oil painting, refined brushwork, 16:9, no text
+CHARACTERS: feyre
+Lucien appears to offer an alternative to appealing directly to Tamlin. Their encounter illustrates how an apparent enemy can become a source of knowledge without becoming an ally. His grief and her desire to go home make their interests difficult to reconcile.
+---
+IMAGE: [painted] Lucien alone on horseback, fox mask and golden artificial eye, forest light, cinematic oil painting, refined brushwork, 16:9, no text
+The conversation also gives the death of Andras a wider emotional significance. Feyre is beginning to recognize that the people she feared have attachments of their own. Recognizing another person's grief is not the same as resolving the conflict between them.
+---
+IMAGE: [painted] Symbolic woodland clearing with a golden animal-shaped shadow, no human figure, cinematic oil painting, refined brushwork, 16:9, no text
+Tamlin's ability to change shape makes the distinction between animal and person particularly unstable. The novel uses that uncertainty to challenge Feyre's habit of dividing the world into familiar humans and dangerous outsiders.
+---
+IMAGE: [painted] Ancient tangled woodland, mysterious empty path, subtle supernatural atmosphere, cinematic oil painting, refined brushwork, 16:9, no text
+Knowledge itself becomes a resource. The mention of the Suriel offers the possibility of answers outside the conversations controlled by the estate's inhabitants. For someone who has survived by observing her surroundings, a new source of information is a powerful temptation.
+---
+IMAGE: [painted] Two riders rigid on forest path, ominous empty dark space behind trees, no visible monster, cinematic oil painting, refined brushwork, 16:9, no text
+CHARACTERS: feyre
+The Bogge introduces a different kind of danger. Ordinary courage is not necessarily useful against a creature whose power depends on being acknowledged. Feyre must learn that restraint can be as valuable as action, a lesson very different from her encounter with the wolf.
+---
+IMAGE: [painted] Masked Tamlin preparing to depart manor grounds into forest, heroic but restrained, cinematic oil painting, refined brushwork, 16:9, no text
+CHARACTERS: tamlin_fae
+Tamlin's response to the danger further complicates Feyre's judgment of him. His responsibilities extend beyond enforcing a treaty. The estate is not simply a place of privilege; maintaining its safety demands attention to threats that Feyre barely comprehends.
+---
+IMAGE: [painted] Feyre looking from an upstairs window into a moonlit garden, silhouette from behind, cinematic oil painting, refined brushwork, 16:9, no text
+CHARACTERS: feyre
+The most compelling danger for Feyre may not be something frightening at all. Her longing for home makes the prospect of reunion almost impossible to resist. The novel has already shown how powerfully her devotion influences her decisions.
+---
+IMAGE: [painted] Distant familiar father figure standing alone in moonlit garden, face indistinct, viewed from window, cinematic oil painting, refined brushwork, 16:9, no text
+Then she sees a figure she recognizes as her father. How could he have reached this place? The question brings the opening chapters back to their emotional starting point: a daughter who cannot stop worrying about her family, even in a world where trusting appearances can be dangerous.
