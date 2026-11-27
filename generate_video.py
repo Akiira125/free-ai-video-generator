@@ -58,6 +58,8 @@ def parse_script(path: str):
             continue
         if line.upper().startswith("VOICE:"):
             settings["voice"] = line.split(":", 1)[1].strip()
+        elif line.upper().startswith("CHARACTER_REGISTRY:"):
+            settings["registry"] = line.split(":", 1)[1].strip()
         elif line.upper().startswith("MUSIC:"):
             val = line.split(":", 1)[1].strip()
             settings["music"] = val or None
@@ -412,7 +414,7 @@ def main():
     args = ap.parse_args()
 
     settings, scenes = parse_script(args.script)
-    scenes = direct(scenes)
+    scenes = direct(scenes, settings.get("registry"))
     if args.plan_only:
         print(json.dumps(scenes, indent=2, ensure_ascii=False))
         return
@@ -475,17 +477,37 @@ def main():
                 elif chunk["type"] == "WordBoundary":
                     marks.extend([(w, chunk["offset"] / 10000000) for w in words(chunk["text"])])
         return marks
-    marks = asyncio.run(narrate())
-    total = get_duration(audio_mp3)
-    expected = words(narration)
-    if [w for w, _ in marks] != expected:
-        raise RuntimeError("Narration word alignment mismatch; refusing inaccurate visual timing")
-    cuts = [0.0]
-    count = 0
-    for scene in scenes[:-1]:
-        count += len(words(scene["narration"]))
-        cuts.append(marks[count][1])
-    cuts.append(total)
+    if voice.startswith("kokoro:"):
+        from kokoro import KPipeline
+        import numpy as np
+        import soundfile as sf
+        pipeline = KPipeline(lang_code="a", repo_id="hexgrad/Kokoro-82M")
+        chunks = []
+        cuts = [0.0]
+        samples = 0
+        for scene in scenes:
+            audio = [np.asarray(a) for _, _, a in pipeline(scene["narration"], voice=voice.split(":",1)[1], speed=0.95) if a is not None]
+            if not audio:
+                raise RuntimeError("Kokoro returned no audio")
+            segment = np.concatenate(audio)
+            chunks.append(segment)
+            samples += len(segment)
+            cuts.append(samples / 24000)
+        audio_mp3 = workdir / "narration.wav"
+        sf.write(audio_mp3, np.concatenate(chunks), 24000)
+        total = cuts[-1]
+    else:
+        marks = asyncio.run(narrate())
+        total = get_duration(audio_mp3)
+        expected = words(narration)
+        if [w for w, _ in marks] != expected:
+            raise RuntimeError("Narration word alignment mismatch; refusing inaccurate visual timing")
+        cuts = [0.0]
+        count = 0
+        for scene in scenes[:-1]:
+            count += len(words(scene["narration"]))
+            cuts.append(marks[count][1])
+        cuts.append(total)
     frames = [round(t * FPS) for t in cuts]
     frames[-1] = math.ceil(total * FPS)
     clip_paths = []
