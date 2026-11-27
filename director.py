@@ -15,7 +15,23 @@ CREATURES = {"giant_wolf": "Supernatural gray wolf, shoulder height comparable t
 PAINTED_STYLE = "Epic cinematic digital oil painting, visible refined brushwork, atmospheric perspective, richly painted textures, natural human anatomy, expressive faces, sophisticated lighting, illustrated novel aesthetic, not photography, not cartoon, widescreen 16:9, no text."
 SPECIES = {"human": "Mortal human, natural rounded human ears, no elven features.", "high_fae": "High Fae, humanoid anatomy, subtly pointed ears, elegant otherworldly features."}
 
-def direct(scenes):
+def direct(scenes, registry_path=None):
+    profiles = dict(CHARACTERS)
+    identities = {}
+    references = {}
+    if registry_path:
+        registry = json.loads(Path(registry_path).read_text(encoding="utf-8"))
+        for identity, character in registry["characters"].items():
+            for form in character["forms"].values():
+                key = form["id"]
+                profiles[key] = character["name"] + ": " + form["description"]
+                identities[key] = identity
+                references[key] = form.get("reference")
+        for alias, key in {"feyre":"feyre_human","beast":"tamlin_beast"}.items():
+            if key in identities:
+                profiles[alias] = profiles[key]
+                identities[alias] = identities[key]
+                references[alias] = references[key]
     for scene in scenes:
         p = scene["image_prompt"]
         for tag, description in {**ENVIRONMENTS, **CREATURES}.items():
@@ -27,10 +43,14 @@ def direct(scenes):
         for tag, description in SPECIES.items():
             p = p.replace("[" + tag + "]", description)
         names = scene.get("characters", [])
-        unknown = set(names) - CHARACTERS.keys()
+        unknown = set(names) - profiles.keys()
+        ids = [identities.get(n, n) for n in names]
+        if len(ids) != len(set(ids)):
+            raise ValueError("Multiple forms of the same character in one scene")
+        scene["character_references"] = [references[n] for n in names if references.get(n)]
         if unknown:
             raise ValueError(f"Unknown character: {unknown}")
-        scene["image_prompt"] = " ".join([p, *(CHARACTERS[n] + (" " + SPECIES["human"] if n == "feyre" and style == PAINTED_STYLE else "") for n in names), style])
+        scene["image_prompt"] = " ".join([p, *(profiles[n] + (" " + SPECIES["human"] if n == "feyre" and style == PAINTED_STYLE else "") for n in names), style])
         if len(scene["image_prompt"]) > 2048:
             raise ValueError("Prompt exceeds provider limit")
     return scenes
