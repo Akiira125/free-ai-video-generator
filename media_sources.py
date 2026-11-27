@@ -174,11 +174,12 @@ def pollinations_image(mode, prompt, destination):
 def select_image(mode, index, query, destination, local_dir, prompt=None):
     images = sorted(p for p in Path(local_dir).iterdir() if p.suffix.lower() in (".png", ".jpg", ".jpeg", ".webp")) if Path(local_dir).exists() else []
     if mode == "manual":
-        if index >= len(images):
+        source = Path(local_dir) / f"scene_{index+1:03}.jpg"
+        if not source.is_file():
             raise RuntimeError(f"Missing local image for scene {index + 1}")
-        with Image.open(images[index]) as img:
+        with Image.open(source) as img:
             img.convert("RGB").save(destination, "JPEG", quality=95)
-        return {"provider": "local", "file": images[index].name}
+        return {"provider": "local", "file": source.name}
     if mode in POLLINATIONS_MODELS:
         return pollinations_image(mode, prompt or query, destination)
     if mode == "pixabay":
