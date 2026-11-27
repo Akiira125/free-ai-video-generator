@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "scope": "all novels",
+  "rules": [
+    "Explain motivations before or alongside consequential decisions when the source permits.",
+    "Distinguish event chronology from revelation chronology; do not spoil later revelations.",
+    "Prioritize causal memories, relationships and character development over decorative details.",
+    "Mark unverified ages and chapter locations; never invent precise facts.",
+    "Maintain original narration and distinguish interpretation from source facts.",
+    "Use approximately ten chapters per production block, adjusting at natural narrative boundaries.",
+    "Keep stable character form identifiers and scene image mappings."
+  ],
+  "review_questions": [
+    "What happens?",
+    "Why does the character act?",
+    "What does the audience need to know now?",
+    "What changes afterward?"
+  ]
+}
