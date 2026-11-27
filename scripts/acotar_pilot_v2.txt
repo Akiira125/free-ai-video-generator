@@ -1,0 +1,36 @@
+VOICE: kokoro:af_heart
+CHARACTER_REGISTRY: scripts/acotar/characters.json
+MUSIC:
+
+---
+IMAGE: [painted] A lone adult brunette huntress in a vast snowy pine forest, wooden bow, cold blue light, cinematic oil painting, rounded human ears
+CHARACTERS: feyre
+In the depths of winter, nineteen-year-old Feyre Archeron ventures into a forest where finding a single animal could mean the difference between eating and going hungry. She would rather spend her days painting, but there is little room for dreams when three other people depend on her. And although she is the youngest of three sisters, she has become the one responsible for keeping them alive. To understand why she keeps returning to this dangerous forest, we need to understand a promise she made long before this winter.
+---
+IMAGE: [painted] Four people only inside a poor cottage: three adult sisters and elderly father with injured leg, warm hearth, painterly realism
+CHARACTERS: feyre
+The Archerons were once wealthy. When their fortune collapsed, their father was left with an injured leg and the family fell into poverty. Nesta, the eldest, struggles with bitterness; Elain is gentler but unprepared for their new circumstances. Before her mother died, Feyre had promised to look after the family. She was still a child. As the years passed, she learned to hunt, and that childhood promise became the burden around which she organized her life. It helps explain why she continues to provide for her sisters even when their dependence frustrates her.
+---
+IMAGE: [painted] Huge gray wolf and small doe in snowy forest clearing, distant huntress crouched behind pine, epic oil painting
+CHARACTERS: feyre
+In the forest, Feyre spots a deer. For her family, it represents food they desperately need. But an enormous gray wolf emerges, threatening to take the same prey. Its size makes her wonder whether it is a Fae in animal form. Generations of humans have grown up fearing the immortal beings beyond the wall, remembering a history of enslavement and war. For Feyre, the animal is therefore more than a rival hunter. It may represent the very people she has been taught to fear.
+---
+IMAGE: [painted] Human huntress with lowered wooden bow, distant fallen gray wolf, snowy woodland, non-graphic painterly scene
+CHARACTERS: feyre
+Feyre kills the wolf. Her decision is shaped both by the need to survive and by her hostility toward the Fae. She cannot know for certain what the creature is, but she acts anyway. This is the first great contradiction of her story: a young woman capable of extraordinary sacrifice for her family can also be merciless toward someone she considers an enemy. What appears to be a successful hunt will soon become the reason she must leave everything behind.
+---
+IMAGE: [painted] Adult brunette huntress selling folded pelts to scarred woman merchant in medieval winter market, cinematic oil painting
+CHARACTERS: feyre
+At the village market, a scarred mercenary offers Feyre a generous price for the pelts. Their encounter brings unsettling news about the dangers near the border. The wall separating the human lands from Prythian is supposed to protect people like Feyre, but the warnings suggest that this protection is becoming increasingly uncertain. For a moment, the money offers her family some relief. It cannot protect them from what is about to arrive at their door.
+---
+IMAGE: [painted] Massive golden four-legged beast with curved horns and wolf-like muzzle at cottage doorway, three adult women and father inside, cinematic oil painting
+CHARACTERS: feyre, beast
+An enormous golden beast confronts the Archerons at their cottage. The wolf Feyre killed was indeed a Fae, and the creature demands payment for his death under the treaty between their peoples. Feyre faces a choice between death and a life across the wall in Prythian. The danger she believed belonged to distant legends has reached her own home. By agreeing to leave, she can survive, but she must abandon the family she has spent years trying to protect.
+---
+IMAGE: [painted] Adult brunette human woman on white horse leaving snowy village toward dark forest, distant golden horned beast, painterly landscape
+CHARACTERS: feyre, beast
+Even as Feyre prepares to depart, her thoughts turn to her sisters and their supplies. Who will feed them when she is gone? The promise to her mother has shaped her life so completely that leaving is not simply a change of home. It means losing the role that has given her a sense of purpose. She travels toward a land she fears, with no certainty about what awaits her there.
+---
+IMAGE: [painted] Magnificent spring estate with flowering gardens beyond winter woodland, solitary human brunette on white horse seen from behind, cinematic classical oil painting
+CHARACTERS: feyre
+Beyond the human lands, the landscape changes dramatically. The cold and deprivation of Feyre's former life give way to the flowering beauty of the Spring Court. Yet its magnificent estate does not mean that she is free. She has entered a world whose inhabitants and rules she barely understands. For the first time in years, her struggle is no longer simply about finding enough food. It is about discovering whether the beliefs that helped her survive can also help her understand the people around her.
