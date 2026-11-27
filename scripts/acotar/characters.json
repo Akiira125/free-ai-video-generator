@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "book_id": "acotar",
+  "characters": {
+    "feyre": {
+      "name": "Feyre Archeron",
+      "forms": {
+        "human": {
+          "id": "feyre_human",
+          "description": "19-year-old mortal human, chestnut brown hair, gray-blue eyes, oval face, rounded human ears",
+          "reference": "assets/scenes/scene_001.jpg",
+          "reference_status": "pending verification"
+        }
+      }
+    },
+    "tamlin": {
+      "name": "Tamlin",
+      "forms": {
+        "beast": {
+          "id": "tamlin_beast",
+          "description": "Massive golden quadruped, powerful feline body, wolf-like muzzle, antlers",
+          "reference": "assets/scenes/scene_006.jpg",
+          "reference_status": "pending verification"
+        },
+        "fae": {
+          "id": "tamlin_fae",
+          "description": "High Fae male, golden hair, green eyes, pointed ears, emerald-adorned mask during the curse",
+          "reference": null,
+          "reference_status": "to create"
+        }
+      }
+    }
+  },
+  "rules": {
+    "one_form_per_character_per_scene": true,
+    "allow_transformation_scene_only_if_explicit": true,
+    "reference_images_are_identity_guides_not_reused_scene_compositions": true,
+    "verify_chronology_and_appearance": true
+  }
+}
