@@ -55,6 +55,19 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
+      - name: Install Kokoro
+        if: ${{ !inputs.plan_only && inputs.image_test == '' }}
+        run: |
+          sudo apt-get install -y espeak-ng libsndfile1
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install kokoro==0.9.4 soundfile
+
+      - name: Verify pilot illustrations
+        if: ${{ inputs.script_path == 'scripts/acotar_pilot_v1.txt' && !inputs.plan_only && inputs.media_mode == 'manual' }}
+        run: |
+          python -m py_compile generate_video.py director.py media_sources.py
+          python -c "from director import check_image; from pathlib import Path; print([check_image(Path('assets/scenes') / f'scene_{i:03}.jpg') for i in range(1,9)])"
+
       - name: Restore generated images
         uses: actions/cache@v4
         with:
